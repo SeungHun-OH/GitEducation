@@ -71,6 +71,10 @@ Git 프로젝트의 세 가지 구성요소에 대해서 이해할 필요가 있
 
 **- Working Directory: **작업할 파일이 있는 디렉토리
 
+​	Working Directory의 모든 파일은 크게 **Tracked(관리대상임)**와 **Untracked(관리대상 아님)**로 나눈다. Tracked 파일은 또 <u>unmodified(수정하지 않음), modified(수정함), staged(커밋으로 저장소에 기록할) 상태 중 하나</u>이다. 간단히 말하자만 Git이 알고 있는 파일이라는 것이다. 그리고 나머지 파일은 모두 Untracked 파일이다.  Untracked 파일은 Working Directory에 있는 파일 중 스냅샷에도 Staging Area에도 포함되지 않은 파일이다. 처음 저장소를 Clone 하면 모든 파일은 Tracked이면서 Unmodified 상태이다. 파일을 Checkout 하고 나서 아무것도 수정하지 않았기 때문에 그렇다. 마지막 커밋 이후 아직 아무것도 수정하지 않은 상태에서 어떤 파일을 수정하면 Git은 그 파일을 **Modified** 상태로 인식한다. 실제로 커밋을 하기 위해서는 이 수정한 파일을 Staged 상태로 만들고, Staged 상태의 파일을 커밋한다. 이런 라이프사이클을 계속 반복한다.
+
+![파일의 라이프사이클](https://git-scm.com/book/en/v2/images/lifecycle.png)
+
 **- Staging Area: **커밋(Commit)을 수행할 파일들이 올라가는 영역
 
 **- Git Directory: **Git 프로젝트의 메타 데이터와 데이터 정보가 저장되는 디렉토리
@@ -94,6 +98,12 @@ Git 프로젝트의 세 가지 구성요소에 대해서 이해할 필요가 있
 ​	저장소(Repo)는 <u>실제 소스코드가 담겨 있으면서 커밋(Commit) 내역 등의 모든 작업 이력이 담겨 있는 공간</u>을 의미한다. 프로젝트의 메타 데이터를 포함한 각종 데이터는 <kbd>.git 폴더</kbd>에 담기게 되는데, 실제로 열어보면 각종 데이터와 해시 값 등이 담겨 있는 것을 확인할 수 있다.
 
 어떠한 파일을 <kbd>Commit</kbd>하게 되면 각 작업을 분류하기 위해 Hash 값을 이용한다. 일반적으로 Hash 값은 충돌이 발생하지 않아 정확한 커밋 내역 관리가 가능하다.
+
+##### Git 저장소 만들기
+
+```cmd
+git init
+```
 
 
 
@@ -124,6 +134,10 @@ git log	//"커밋 내용 확인"
 
 
 > # GItHub
+
+Github는 Web Service인데 주요 기능으로 Git 원격저장소를 제공한다.
+
+
 
 #### 리모트 저장소 연결
 

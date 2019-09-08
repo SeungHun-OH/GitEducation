@@ -79,11 +79,11 @@ git log --branches --graph --decorate	//"로그에 모든 브랜치 표시+그�
 
 > # 브랜치 통합
 
-Git에서 브랜치를 합치는 방법에는 **fast-forward와 3-way merge**가 있다. 어느 쪽을 사용하느냐에 따라 통합 후의 브랜치 이력이 달라지게된다.
+Git에서 브랜치를 합치는 방법에는하나는 `Merge` 이고 다른 하나는 `Rebase` 이다. 어느 쪽을 사용하느냐에 따라 통합 후의 브랜치 이력이 크게 달라지게된다.
 
 
 
-## 1. 병합(merge)
+## 1. 병합(Merge)
 
 A브랜치에서 B브랜치를 병합한다 (=A로 B를 가져온다. A<-B)
 
@@ -212,9 +212,100 @@ please contact us at email.support@github.com
 
 
 
+## 3. 재설정(Rebase)
+
+Rebase는 Merge와는 다르게 이름 그대로 <u>**브랜치의 공통 조상이 되는 base를 다른 브랜치의 커밋 지점으로 바꾸는 것**</u>이다. master브랜치의 커밋(m2) 이후에 feature의 커밋(f1, f2)이 일어난 것 처럼 하려고 한다. 
+
+![예시1](https://images.velog.io/post-images/godori/a27c8b20-b14d-11e9-a131-ff9a59280693/git-branches.png)
+
+![예시2](https://images.velog.io/post-images/godori/bf044d70-b2d1-11e9-a332-d525eafa8638/image.png)
+
+위 그림처럼 하기 위해서는 feature의 base를 b가 아니라 m2로 재설정(Rebase)해야한다.
+
+![예시3](https://images.velog.io/post-images/godori/7e3849c0-b157-11e9-8bdc-2f7c5d6ac42c/image.png)
 
 
 
+**Rebase의 기본 전략은 다음과 같다.**
+
+먼저 Rebase 하려는 브랜치 커밋들의 변경사항을 Patch라는 것으로 만든 다음에 어딘가에 저장해 둔다. 그리고 이를 master 브랜치에 하나씩 적용하여 새로운 커밋을 만드는 것이다.
+
+feature를 master 브랜치로 Rebase하는 명령어를 살펴보면 일련의 단계를 거쳐 두 브랜치의 병합이 완료된다.
+
+1. **feature브랜치로 checkout**
+2. **master브랜치로 rebase**
+3. **feature브랜치를 master로 fast-forward merge**
+
+
+
+#### Rebase 과정
+
+![과정1](https://images.velog.io/post-images/godori/174abe40-b15d-11e9-a131-ff9a59280693/image.png)
+
+```cmd
+git check out feature
+```
+
+> 1. **feature브랜치로 체크아웃을 한다.**
+
+
+
+![과정2](https://images.velog.io/post-images/godori/8fa81e80-b15f-11e9-a308-131479da2b82/image.png)
+
+> 2. **master와 feature의 공통 조상이 되는 base 커밋부터 현재 브랜치까지의 변경 사항(`▵1`, `▵2`)을 구해서 patch로 저장해 둔다.**
+
+
+
+![과정3](https://images.velog.io/post-images/godori/8b3a3d10-b15f-11e9-a308-131479da2b82/image.png)
+
+> 3. **HEAD를 master브랜치로 변경한다.**
+
+
+
+![과정4](https://images.velog.io/post-images/godori/ade9a210-b15f-11e9-9a9a-0f3d00cfbaf3/image.png)
+
+```cmd
+Applying f1
+```
+
+> 4. **head가 현재 가리키고 있는 `m2`에 변경사항 `▵1` 을 적용하여 새로운 커밋 `f1'`을 생성한다.**
+
+
+
+![과정5](https://images.velog.io/post-images/godori/f4617d30-b15f-11e9-9a9a-0f3d00cfbaf3/image.png)
+
+```cmd
+Applying f2
+```
+
+> 5. **`f1'`에 변경사항 `▵2` 을 적용하여 새로운 커밋 `f2'`을 생성한다.**
+
+
+![과정6](https://images.velog.io/post-images/godori/2429d990-b160-11e9-9a9a-0f3d00cfbaf3/image.png)
+
+> 6. **이제 feature가 f2'를 가리키도록 한다.**
+
+
+
+![과정7](https://images.velog.io/post-images/godori/b9224b40-b160-11e9-9a9a-0f3d00cfbaf3/image.png)
+
+```cmd
+git merge feature
+```
+
+> 7. **feature를 master로 fast-forward merge하여 완료한다.**
+
+
+
+
+
+## 브랜치 병합: Merge VS Rebase
+
+먼저 Merge의 경우 히스토리란 작업한 내용의 사실을 기록한 것이다. Merge로 브랜치를 병합하게 되면 커밋 내역에 Merge commit이 추가로 남게 된다. 따라서 Merge를 사용하면 브랜치가 생기고 병합되는 모든 작업 내용을 그대로 기록하게 된다.
+
+다음으로 Rebase의 경우는 브랜치를 병합할 때 이런 Merge commit을 남기지 않으므로, 마치 다른 브랜치는 없었던 것처럼 프로젝트의 작업 내용이 하나의 흐름으로 유지된다.
+
+![Merge VS Rebase](https://images.velog.io/post-images/godori/bf3e0e50-b161-11e9-a308-131479da2b82/image.png)
 
 
 
@@ -243,3 +334,10 @@ please contact us at email.support@github.com
 [참고9]<https://github.com/progit/progit/blob/master/ko/03-git-branching/01-chapter3.markdown>
 
 [참고10]<https://seonkyukim.github.io/git-tutorial/git-merge/#>
+
+[참고11]<https://velog.io/@godori/Git-Rebase>
+
+[참고12]<https://brunch.co.kr/@anonymdevoo/7>
+
+[참고 13]<https://tech.10000lab.xyz/git/git-rebase-workflow.html>
+
